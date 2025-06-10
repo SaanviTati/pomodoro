@@ -1,0 +1,206 @@
+/* Reset and base styles */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    min-height: 100vh;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+
+/* Main container */
+.container {
+    width: 100%;
+    max-width: 400px;
+}
+
+/* Timer card */
+.timer-card {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(20px);
+    border-radius: 24px;
+    padding: 32px;
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    text-align: center;
+}
+
+/* Header styles */
+.header {
+    margin-bottom: 32px;
+}
+
+.header h1 {
+    color: white;
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 8px;
+}
+
+.session-type {
+    color: rgba(255, 255, 255, 0.7);
+    font-size: 1.125rem;
+    font-weight: 500;
+}
+
+/* Circular timer container */
+.timer-circle-container {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 32px;
+}
+
+/* SVG timer circle */
+.timer-circle {
+    transform: rotate(-90deg);
+}
+
+.circle-bg {
+    stroke: rgba(255, 255, 255, 0.2);
+    stroke-width: 8;
+    fill: transparent;
+}
+
+.circle-progress {
+    stroke: #ef4444;
+    stroke-width: 8;
+    fill: transparent;
+    stroke-dasharray: 754; /* 2 * π * 120 */
+    stroke-dashoffset: 754;
+    stroke-linecap: round;
+    transition: stroke-dashoffset 1s linear, stroke 0.3s ease;
+}
+
+.circle-progress.break-mode {
+    stroke: #10b981;
+}
+
+/* Timer display in center */
+.timer-display {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+}
+
+.time-text {
+    font-size: 3rem;
+    font-weight: 700;
+    font-family: 'Courier New', monospace;
+    margin-bottom: 8px;
+}
+
+.time-remaining {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.875rem;
+}
+
+/* Control buttons */
+.controls {
+    display: flex;
+    gap: 16px;
+    justify-content: center;
+    margin-bottom: 24px;
+}
+
+.btn {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 24px;
+    border: none;
+    border-radius: 50px;
+    font-weight: 600;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    outline: none;
+}
+
+.btn:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+}
+
+.btn:active {
+    transform: translateY(0);
+}
+
+.btn-primary {
+    background: #10b981;
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #059669;
+}
+
+.btn-primary.running {
+    background: #ef4444;
+}
+
+.btn-primary.running:hover {
+    background: #dc2626;
+}
+
+.btn-secondary {
+    background: rgba(255, 255, 255, 0.2);
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.btn-icon {
+    font-size: 1.125rem;
+}
+
+/* Session info */
+.session-info {
+    color: rgba(255, 255, 255, 0.6);
+    font-size: 0.875rem;
+}
+
+/* Responsive design */
+@media (max-width: 480px) {
+    .timer-card {
+        padding: 24px;
+        margin: 16px;
+    }
+    
+    .time-text {
+        font-size: 2.5rem;
+    }
+    
+    .controls {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .btn {
+        width: 100%;
+        max-width: 200px;
+    }
+}
+
+/* Animation for session transition */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.session-transition {
+    animation: pulse 0.6s ease-in-out;
+}

@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pomodoro Timer</title>
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="container">
+        <div class="timer-card">
+            <!-- Header -->
+            <div class="header">
+                <h1>Pomodoro Timer</h1>
+                <p class="session-type" id="sessionType">🍅 Work Session</p>
+            </div>
+            
+            <!-- Circular Timer -->
+            <div class="timer-circle-container">
+                <svg class="timer-circle" width="256" height="256">
+                    <!-- Background circle -->
+                    <circle 
+                        cx="128" 
+                        cy="128" 
+                        r="120"
+                        class="circle-bg">
+                    </circle>
+                    <!-- Progress circle -->
+                    <circle 
+                        cx="128" 
+                        cy="128" 
+                        r="120"
+                        class="circle-progress"
+                        id="progressCircle">
+                    </circle>
+                </svg>
+                
+                <!-- Timer display in center -->
+                <div class="timer-display">
+                    <div class="time-text" id="timeDisplay">25:00</div>
+                    <div class="time-remaining" id="timeRemaining">25 minutes left</div>
+                </div>
+            </div>
+            
+            <!-- Control buttons -->
+            <div class="controls">
+                <button class="btn btn-primary" id="startStopBtn">
+                    <span class="btn-icon" id="btnIcon">▶️</span>
+                    <span id="btnText">Start</span>
+                </button>
+                
+                <button class="btn btn-secondary" id="resetBtn">
+                    <span class="btn-icon">🔄</span>
+                    Reset
+                </button>
+            </div>
+            
+            <!-- Session info -->
+            <div class="session-info">
+                <p>Work: 25 minutes • Break: 5 minutes</p>
+            </div>
+        </div>
+    </div>
+    
+    <script src="script.js"></script>
+</body>
+</html>
