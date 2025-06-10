@@ -1,21 +1,21 @@
+<!-- index.html (Frontend) -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Phone Usage Detection with Hands</title>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Phone Usage Detection</title>
   <style>
-    body {
-      margin: 0; font-family: Arial, sans-serif;
-      background: #121212; color: #eee;
-    }
+    body { margin: 0; background: #121212; color: #eee; font-family: sans-serif; }
     #webcam {
       position: fixed;
+      bottom: 10px;
+      right: 10px;
+      width: 160px;
+      height: 120px;
       border: 2px solid #555;
-      width: 200px;
-      height: 200px;
+      border-radius: 8px;
       object-fit: cover;
-      background: #222;
       z-index: 100;
     }
     #phoneAlert {
@@ -27,150 +27,53 @@
       font-weight: bold;
       padding: 12px 20px;
       border-radius: 6px;
-      box-shadow: 0 0 10px #d32f2faa;
-      font-size: 18px;
       display: none;
-      z-index: 9999;
-    }
-    #loadingMsg {
-      position: fixed;
-      top: 50%;
-      left: 50%;
-      transform: translate(-50%, -50%);
-      font-size: 20px;
-      color: #ccc;
-    }
-    canvas {
-      display: none; /* Hide canvas since we just need frames for detection */
+      z-index: 999;
     }
   </style>
 </head>
 <body>
-  <div id="loadingMsg">Loading models and webcam...</div>
-  <video id="webcam" autoplay playsinline muted></video>
-  <div id="phoneAlert">📵 Phone Usage Detected!</div>
-
-  <!-- TensorFlow.js and COCO-SSD -->
-  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.8.0/dist/tf.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
-
-  <!-- MediaPipe Hands -->
-  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/hands/hands.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/@mediapipe/camera_utils/camera_utils.js"></script>
+  <video id="webcam" autoplay muted playsinline></video>
+  <div id="phoneAlert">📵 Phone Detected!</div>
 
   <script>
-    const video = document.getElementById('webcam');
-    const alertDiv = document.getElementById('phoneAlert');
-    const loadingMsg = document.getElementById('loadingMsg');
-
-    // Variables to hold models and state
-    let cocoModel;
-    let phoneDetected = false;
-    let handDetectedNearFace = false;
-
-    // Setup webcam stream
     async function setupWebcam() {
-      try {
-        const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false });
-        video.srcObject = stream;
-        await new Promise(resolve => video.onloadedmetadata = resolve);
-      } catch (err) {
-        alert('Error accessing webcam: ' + err.message);
-        throw err;
-      }
+      const video = document.getElementById('webcam');
+      const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' } });
+      video.srcObject = stream;
+      return new Promise(resolve => video.onloadedmetadata = resolve);
     }
 
-    // Capture frame for COCO-SSD detection
-    function captureFrame(videoElement) {
+    async function captureFrameBlob(videoElement) {
       const canvas = document.createElement('canvas');
       canvas.width = videoElement.videoWidth;
       canvas.height = videoElement.videoHeight;
       const ctx = canvas.getContext('2d');
-      ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
-      return canvas;
+      ctx.drawImage(videoElement, 0, 0);
+      return new Promise(resolve => canvas.toBlob(resolve, 'image/jpeg', 0.8));
     }
 
-    // Show or hide alert
-    function showAlert(show) {
-      alertDiv.style.display = show ? 'block' : 'none';
-    }
-
-    // Heuristic: Check if any hand landmarks are near the top-center region of the frame (face area)
-    function checkHandNearFace(landmarks, videoWidth, videoHeight) {
-      // Typical face area - upper center box:
-      // x between 0.3 and 0.7 (normalized)
-      // y between 0 and 0.5 (normalized)
-      for (const point of landmarks) {
-        if (
-          point.x > 0.3 && point.x < 0.7 &&
-          point.y > 0 && point.y < 0.5
-        ) {
-          return true;
-        }
-      }
-      return false;
-    }
-
-    // Initialize MediaPipe Hands
-    const hands = new Hands({
-      locateFile: (file) => `https://cdn.jsdelivr.net/npm/@mediapipe/hands/${file}`
-    });
-    hands.setOptions({
-      maxNumHands: 2,
-      modelComplexity: 1,
-      minDetectionConfidence: 0.7,
-      minTrackingConfidence: 0.5
-    });
-
-    hands.onResults(results => {
-      if (results.multiHandLandmarks && results.multiHandLandmarks.length > 0) {
-        // Check if any hand is near face area
-        handDetectedNearFace = results.multiHandLandmarks.some(handLms =>
-          checkHandNearFace(handLms, video.videoWidth, video.videoHeight)
-        );
-      } else {
-        handDetectedNearFace = false;
-      }
-      updateAlert();
-    });
-
-    // Use MediaPipe camera utils to continuously send frames to hands detector
-    let mpCamera;
-    async function startHandsDetection() {
-      mpCamera = new Camera(video, {
-        onFrame: async () => {
-          await hands.send({ image: video });
-        },
-        width: 640,
-        height: 480
+    async function sendFrameToBackend(blob) {
+      const formData = new FormData();
+      formData.append('file', blob, 'frame.jpg');
+      const response = await fetch('http://localhost:8000/detect', {
+        method: 'POST',
+        body: formData
       });
-      mpCamera.start();
-    }
-
-    // Update alert based on combined detection
-    function updateAlert() {
-      showAlert(phoneDetected || handDetectedNearFace);
+      return await response.json();
     }
 
     async function main() {
-      loadingMsg.innerText = 'Accessing webcam...';
       await setupWebcam();
+      const video = document.getElementById('webcam');
+      const alertDiv = document.getElementById('phoneAlert');
 
-      loadingMsg.innerText = 'Loading COCO-SSD model...';
-      cocoModel = await cocoSsd.load();
-
-      loadingMsg.innerText = 'Starting MediaPipe Hands...';
-      await startHandsDetection();
-
-      loadingMsg.style.display = 'none';
-
-      // Run COCO-SSD detection every 1 second
       setInterval(async () => {
-        const canvas = captureFrame(video);
-        const predictions = await cocoModel.detect(canvas);
-        phoneDetected = predictions.some(p => p.class === 'cell phone' && p.score > 0.4);
-        updateAlert();
-      }, 1000);
+        const blob = await captureFrameBlob(video);
+        const result = await sendFrameToBackend(blob);
+        const phoneDetected = result.detections && result.detections.length > 0;
+        alertDiv.style.display = phoneDetected ? 'block' : 'none';
+      }, 1500);
     }
 
     main();
