@@ -267,3 +267,17 @@ iframe[src="webcam.html"] {
 .session-transition {
     animation: pulse 0.6s ease-in-out;
 }
+
+#loginBtn {
+  display: block !important;
+  position: relative !important;
+  z-index: 9999 !important;
+  background-color: #4285f4;
+  color: white;
+  padding: 10px 20px;
+  border: none;
+  border-radius: 8px;
+  font-size: 16px;
+  cursor: pointer;
+  margin: 20px;
+}

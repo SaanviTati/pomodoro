@@ -1,88 +1,70 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pomodoro Timer</title>
-    <link rel="stylesheet" href="styles.css">
-    <!-- Firebase App (core SDK) -->
-    <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-app-compat.js"></script>
-    <!-- Firebase Authentication -->
-    <script src="https://www.gstatic.com/firebasejs/10.11.0/firebase-auth-compat.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Pomodoro Timer</title>
+  <link rel="stylesheet" href="styles.css" />
 </head>
 <body>
-    <!-- Three.js Road Background -->
-    <canvas id="roadCanvas"></canvas>
-    
-    <div class="container">
-        <div class="timer-card">
-            <!-- Header -->
-            <div class="header">
-                <h1>Pomodoro Timer</h1>
-                <p class="session-type" id="sessionType">🍅 Work Session</p>
-            </div>
-            
-            <!-- Circular Timer -->
-            <div class="timer-circle-container">
-                <svg class="timer-circle" width="256" height="256">
-                    <!-- Background circle -->
-                    <circle 
-                        cx="128" 
-                        cy="128" 
-                        r="120"
-                        class="circle-bg">
-                    </circle>
-                    <!-- Progress circle -->
-                    <circle 
-                        cx="128" 
-                        cy="128" 
-                        r="120"
-                        class="circle-progress"
-                        id="progressCircle">
-                    </circle>
-                </svg>
-                
-                <!-- Timer display in center -->
-                <div class="timer-display">
-                    <div class="time-text" id="timeDisplay">25:00</div>
-                    <div class="time-remaining" id="timeRemaining">25 minutes left</div>
-                </div>
-            </div>
-            
-            <!-- Control buttons -->
-            <div class="controls">
-                <button class="btn btn-primary" id="startStopBtn">
-                    <span class="btn-icon" id="btnIcon">▶️</span>
-                    <span id="btnText">Start</span>
-                </button>
-                
-                <button class="btn btn-secondary" id="resetBtn">
-                    <span class="btn-icon">🔄</span>
-                    Reset
-                </button>
-            </div>
-            
-            <!-- Session info -->
-            <div class="session-info">
-                <p>Work: 25 minutes • Break: 5 minutes</p>
-            </div>
-        </div>
-    </div>
-    
-    <!-- Three.js Library -->
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-    
-    <!-- Road Background Script -->
-    <script src="road-background.js"></script>
-    
-    <!-- Pomodoro Timer Script -->
-    <script src="script.js"></script>
-    
-    <iframe src="webcam.html" width="200px" height="200px"></iframe>
+  <!-- Background -->
+  <canvas id="roadCanvas"></canvas>
 
-    <!-- Spotify in bottom left corner -->
-    <div class="spotify-corner">
-        <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/6UAMYWxRqZGp95EtIVuR0K?utm_source=generator" width="300" height="152" frameBorder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+  <!-- Auth Buttons -->
+  <button id="loginBtn">Sign in with Google</button>
+  <button id="logoutBtn">Logout</button>
+  <div id="userInfo"></div>
+
+  <!-- Timer UI -->
+  <div class="container">
+    <div class="timer-card">
+      <div class="header">
+        <h1>Pomodoro Timer</h1>
+        <p class="session-type" id="sessionType">Pomodoro Work Session</p>
+      </div>
+
+      <div class="timer-circle-container">
+        <svg class="timer-circle" width="256" height="256">
+          <circle cx="128" cy="128" r="120" class="circle-bg"></circle>
+          <circle cx="128" cy="128" r="120" class="circle-progress" id="progressCircle"></circle>
+        </svg>
+        <div class="timer-display">
+          <div class="time-text" id="timeDisplay">25:00</div>
+          <div class="time-remaining" id="timeRemaining">25 minutes left</div>
+        </div>
+      </div>
+
+      <div class="controls">
+        <button class="btn btn-primary" id="startStopBtn">
+          <span class="btn-icon" id="btnIcon">▶️</span>
+          <span id="btnText">Start</span>
+        </button>
+        <button class="btn btn-secondary" id="resetBtn">
+          <span class="btn-icon">🔄</span>
+          Reset
+        </button>
+      </div>
+
+      <div class="session-info">
+        <p>Work: 25 minutes • Break: 5 minutes</p>
+      </div>
     </div>
+  </div>
+
+  <!-- Firebase and Auth -->
+  <script type="module" src="auth.js"></script>
+
+  <!-- Timer Scripts -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="road-background.js"></script>
+  <script src="script.js"></script>
+
+  <!-- Webcam Feed -->
+  <iframe src="webcam.html" width="200px" height="200px"></iframe>
+
+  <!-- Spotify Embed -->
+  <div class="spotify-corner">
+    <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/6UAMYWxRqZGp95EtIVuR0K?utm_source=generator" width="300" height="152" frameborder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
+  </div>
 </body>
 </html>
