@@ -45,12 +45,12 @@ class RoadBackground {
         });
         this.renderer.setSize(window.innerWidth, window.innerHeight);
         // Teal/cyan winter sky like slowroads
-        this.renderer.setClearColor(0x4A6B7A, 1); 
+        this.renderer.setClearColor(0xFAD4C0, 1); 
         this.renderer.shadowMap.enabled = true;
         this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
         
         // Dense atmospheric fog with teal tint
-        this.scene.fog = new THREE.Fog(0x4A6B7A, 20, 120);
+        this.scene.fog = new THREE.Fog(0xFFE3C6, 10, 120);
         
         // Create lighting
         this.createLighting();
@@ -70,11 +70,11 @@ class RoadBackground {
 
     createLighting() {
         // Cold, dim ambient light
-        const ambientLight = new THREE.AmbientLight(0x405060, 0.3);
+        const ambientLight = new THREE.AmbientLight(0xFFE3C6, 0.3);
         this.scene.add(ambientLight);
         
         // Cool directional light with blue tint
-        const directionalLight = new THREE.DirectionalLight(0xB0C4DE, 0.4);
+        const directionalLight = new THREE.DirectionalLight(0xB0C4DE, 0.6);
         directionalLight.position.set(30, 40, 30);
         directionalLight.castShadow = true;
         directionalLight.shadow.mapSize.width = 2048;
@@ -86,9 +86,9 @@ class RoadBackground {
         // Create road geometry
         const roadGeometry = new THREE.PlaneGeometry(this.roadWidth, this.segmentLength * this.numSegments);
         
-        // Dark snowy road
+        // Dark road
         const roadMaterial = new THREE.MeshLambertMaterial({ 
-            color: 0x2A2A2A,
+            color: 0x5A4C3C,
             transparent: true,
             opacity: 0.9
         });
@@ -141,20 +141,34 @@ class RoadBackground {
     }
 
     createLandscape() {
-        // Create snowy ground
-        const groundGeometry = new THREE.PlaneGeometry(200, 200);
-        const groundMaterial = new THREE.MeshLambertMaterial({ color: 0xE8F4F8 });
+        // Create Plane in XZ with subdivisions
+        const groundGeometry = new THREE.PlaneGeometry(200, 200, 128, 128);
+
+        const pos = groundGeometry.attributes.position;
+        for (let i = 0; i < pos.count; i++) {
+            const x = pos.getX(i);
+            const z = pos.getZ(i);
+            const y =
+                Math.sin(x * 0.08) * 0.6 +
+                Math.cos(z * 0.08) * 0.6 +
+                (Math.random() - 0.5) * 0.3;
+            pos.setZ(i, y);
+        }
+        groundGeometry.computeVertexNormals();
+
+        const groundMaterial = new THREE.MeshLambertMaterial({ color: 0x8C5A5A });
         const ground = new THREE.Mesh(groundGeometry, groundMaterial);
         ground.rotation.x = -Math.PI / 2;
-        ground.position.y = -0.1;
+        ground.position.y = -1;
         ground.receiveShadow = true;
         this.scene.add(ground);
+
         
         // Create distant mountains that stay far away
         this.createDistantMountains();
         
-        // Create realistic winter pine trees
-        for (let i = 0; i < 50; i++) {
+        // Create  winter pine trees
+        for (let i = 0; i < 100; i++) {
             let x = (Math.random() - 0.5) * 120;
             // Ensure trees are away from road center but can be closer
             if (Math.abs(x) < 8) {
@@ -166,79 +180,175 @@ class RoadBackground {
                 (Math.random() - 0.5) * 200
             );
         }
-        
-        // Create snowy terrain variations
-        for (let i = 0; i < 20; i++) {
-            let x = (Math.random() - 0.5) * 100;
-            if (Math.abs(x) < 15) {
-                x = x < 0 ? -15 - Math.random() * 30 : 15 + Math.random() * 30;
+
+        // Create floral trees
+        for (let i = 0; i < 50; i++) {
+            let x = (Math.random() - 0.5) * 120;
+            // Ensure trees are away from road center but can be closer
+            if (Math.abs(x) < 8) {
+                x = x < 0 ? -8 - Math.random() * 20 : 8 + Math.random() * 20;
             }
-            this.createSnowyMound(
+            this.createFloralTree(
                 x,
-                -1,
-                (Math.random() - 0.5) * 150
+                0,
+                (Math.random() - 0.5) * 200
             );
         }
+        
     }
 
     createDistantMountains() {
         // Create mountains very far in the distance
-        const numMountains = 15;
-        const distance = -250;
+        const numMountains = 100;
+        const distance = -100;
         
         for (let i = 0; i < numMountains; i++) {
             this.createDistantMountain(
                 (i - numMountains / 2) * 35 + (Math.random() - 0.5) * 25,
                 -5,
-                distance + (Math.random() - 0.5) * 80,
+                distance + (Math.random() - 0.5) * 30,
                 25 + Math.random() * 15
             );
         }
     }
 
-    createDistantMountain(x, y, z, height) {
-        const mountain = new THREE.Group();
-        
-        const numPeaks = 1 + Math.floor(Math.random() * 2);
-        
-        for (let i = 0; i < numPeaks; i++) {
-            const peakHeight = height * (0.8 + Math.random() * 0.2);
-            const peakWidth = 15 + Math.random() * 10;
-            
-            const mountainGeometry = new THREE.ConeGeometry(peakWidth, peakHeight, 8);
-            
-            // Dark silhouette mountains like in slowroads
-            const mountainMaterial = new THREE.MeshLambertMaterial({ 
-                color: 0x2A3A4A,
-                transparent: true,
-                opacity: 0.6
-            });
-            
-            const peak = new THREE.Mesh(mountainGeometry, mountainMaterial);
-            peak.position.x = (i - numPeaks / 2) * peakWidth * 0.4;
-            peak.position.y = peakHeight / 2;
-            
-            mountain.add(peak);
+createDistantMountain(x, y, z, height) {
+    const mountain = new THREE.Group();
+    const numPeaks = 1 + Math.floor(Math.random() * 2);
+
+    for (let i = 0; i < numPeaks; i++) {
+        const peakHeight = height * (0.35 + Math.random() * 0.3);
+        const baseRadius = 15 + Math.random() * 20;
+        const topRadius = baseRadius * 0.4 + Math.random() * 3;
+        const segments = 12 + Math.floor(Math.random() * 5);
+
+        // Replace ConeGeometry with CylinderGeometry
+        const geometry = new THREE.CylinderGeometry(
+            topRadius,
+            baseRadius,
+            peakHeight,
+            segments,
+            5,
+            true
+        );
+
+        const positionAttr = geometry.attributes.position;
+        const variationType = Math.floor(Math.random() * 3);
+
+        for (let j = 0; j < positionAttr.count; j++) {
+            const x = positionAttr.getX(j);
+            const y = positionAttr.getY(j);
+            const z = positionAttr.getZ(j);
+
+            let newY = y;
+
+            // Distortion to flatten/jag/create ridges
+            if (variationType === 0 && Math.abs(y - peakHeight / 2) < 0.2) {
+                newY = y - 2.5 - Math.random(); // flatten top
+            } else if (variationType === 1) {
+                newY = y + (Math.random() - 0.5) * 3.0; // jagged slopes
+            } else if (variationType === 2) {
+                newY = y + Math.sin(x * 1.5 + z * 0.7) * 1.4 * Math.random(); // ridges
+            }
+
+            positionAttr.setY(j, newY);
         }
-        
-        mountain.position.set(x, y, z);
-        this.scene.add(mountain);
-        this.mountains.push(mountain);
+
+        geometry.computeVertexNormals();
+
+        const material = new THREE.MeshLambertMaterial({
+            color: 0x5A4C3C,
+            transparent: false,
+        });
+
+        const peak = new THREE.Mesh(geometry, material);
+        peak.position.x = (i - numPeaks / 2) * baseRadius * 0.5;
+        peak.position.y = peakHeight / 2;
+
+        mountain.add(peak);
     }
+
+    mountain.position.set(x, y, z);
+    this.scene.add(mountain);
+    this.mountains.push(mountain);
+}
+
+createFloralTree(x, y, z) {
+    const tree = new THREE.Group();
+
+    // Trunk
+    const trunkHeight = 3 + Math.random();
+    const trunkGeometry = new THREE.CylinderGeometry(0.35, 0.45, trunkHeight, 6, 1);
+    const trunkMaterial = new THREE.MeshLambertMaterial({ color: 0x5c3a2e }); // richer brown
+    const trunk = new THREE.Mesh(trunkGeometry, trunkMaterial);
+    trunk.position.y = trunkHeight / 2;
+    tree.add(trunk);
+
+    // Leaf canopy
+    const canopy = new THREE.Group();
+    const leafColors = [0x769e84, 0x5a7e55, 0x6c8f65]; // muted green tones
+    const flowerColors = [0x769e84, 0xd891a7, 0xe6a9bc]; // warm pink blossoms
+
+    // Create leafy blobs
+    const numLeafBlobs = 5 + Math.floor(Math.random() * 3);
+    for (let i = 0; i < numLeafBlobs; i++) {
+        const size = 1.2 + Math.random() * 0.6;
+        const geometry = new THREE.SphereGeometry(size, 8, 8);
+        const color = leafColors[Math.floor(Math.random() * leafColors.length)];
+        const material = new THREE.MeshLambertMaterial({ color });
+
+        const blob = new THREE.Mesh(geometry, material);
+        blob.position.set(
+            (Math.random() - 0.5) * 2.0,
+            trunkHeight + Math.random() * 1.2,
+            (Math.random() - 0.5) * 2.0
+        );
+        blob.castShadow = true;
+        canopy.add(blob);
+
+        // Add a few flower meshes to each leaf blob
+        const flowerCount = 3 + Math.floor(Math.random() * 4);
+        for (let j = 0; j < flowerCount; j++) {
+            const flowerGeo = new THREE.SphereGeometry(0.15 + Math.random() * 0.05, 6, 6);
+            const flowerMat = new THREE.MeshLambertMaterial({
+                color: flowerColors[Math.floor(Math.random() * flowerColors.length)]
+            });
+            const flower = new THREE.Mesh(flowerGeo, flowerMat);
+
+            flower.position.set(
+                blob.position.x + (Math.random() - 0.5) * size,
+                blob.position.y + (Math.random() - 0.5) * size,
+                blob.position.z + (Math.random() - 0.5) * size
+            );
+
+            flower.castShadow = true;
+            canopy.add(flower);
+        }
+    }
+
+    tree.add(canopy);
+
+    // Position the full tree
+    tree.position.set(x, y, z);
+    this.scene.add(tree);
+    this.trees.push(tree);
+}
+
+
 
     createPineTree(x, y, z) {
         const tree = new THREE.Group();
         
         // Dark trunk
         const trunkGeometry = new THREE.CylinderGeometry(0.15, 0.25, 4);
-        const trunkMaterial = new THREE.MeshLambertMaterial({ color: 0x2D1B0E });
+        const trunkMaterial = new THREE.MeshLambertMaterial({ color: 0x8E5A4D });
         const trunk = new THREE.Mesh(trunkGeometry, trunkMaterial);
         trunk.position.y = 2;
         trunk.castShadow = true;
         tree.add(trunk);
         
         // Create pine tree layers
-        const layerColors = [0x1A4A3A, 0x1E5A3E, 0x225A42]; // Dark winter pine colors
+        const layerColors = [0x5C6B57, 0x66735D, 0x4D5B4A]; // Dark winter pine colors
         const numLayers = 3 + Math.floor(Math.random() * 2);
         
         for (let i = 0; i < numLayers; i++) {
@@ -268,35 +378,16 @@ class RoadBackground {
         this.trees.push(tree);
     }
 
-    createSnowyMound(x, y, z) {
-        const moundGeometry = new THREE.SphereGeometry(
-            3 + Math.random() * 6,
-            12,
-            6
-        );
-        const moundMaterial = new THREE.MeshLambertMaterial({ 
-            color: 0xE0F0F8
-        });
-        const mound = new THREE.Mesh(moundGeometry, moundMaterial);
-        mound.position.set(x, y, z);
-        mound.scale.y = 0.3 + Math.random() * 0.2;
-        mound.receiveShadow = true;
-        
-        this.scene.add(mound);
-        this.hills.push(mound);
-    }
-
     createSnow() {
         // Create realistic snowflakes
-        const snowflakeGeometry = new THREE.SphereGeometry(0.02, 4, 3);
+        const snowflakeGeometry = new THREE.SphereGeometry(0.05, 4, 3);
         const snowflakeMaterial = new THREE.MeshBasicMaterial({ 
-            color: 0xFFFFFF,
+            color: 0xF9EAE1,
             transparent: true,
-            opacity: 0.6
+            opacity: 0.85
         });
         
-        // More subtle snow
-        for (let i = 0; i < 200; i++) {
+        for (let i = 0; i < 20000; i++) {
             const snowflake = new THREE.Mesh(snowflakeGeometry, snowflakeMaterial);
             
             snowflake.position.set(
@@ -362,20 +453,7 @@ class RoadBackground {
                 tree.position.x = newX;
             }
         });
-        
-        // Move terrain
-        this.hills.forEach(hill => {
-            hill.position.z += this.speed * 0.4;
-            if (hill.position.z > 50) {
-                hill.position.z = -150;
-                let newX = (Math.random() - 0.5) * 100;
-                if (Math.abs(newX) < 15) {
-                    newX = newX < 0 ? -15 - Math.random() * 30 : 15 + Math.random() * 30;
-                }
-                hill.position.x = newX;
-            }
-        });
-        
+                
         // Mountains stay stationary in distance
         
         // Update road position
