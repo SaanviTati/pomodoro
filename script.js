@@ -56,10 +56,10 @@ function updateProgress() {
 // Update session type display
 function updateSessionDisplay() {
     if (isWorkSession) {
-        sessionType.textContent = '🍅 Work Session';
+        sessionType.textContent = 'Work Session';
         progressCircle.classList.remove('break-mode');
     } else {
-        sessionType.textContent = '☕ Break Time';
+        sessionType.textContent = 'Break Time';
         progressCircle.classList.add('break-mode');
     }
 }
