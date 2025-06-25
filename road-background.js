@@ -36,7 +36,7 @@ class RoadBackground {
         );
         this.camera.position.set(0, 2, 5);
         this.camera.lookAt(0, 0, 0);
-        
+
         // Create renderer
         this.renderer = new THREE.WebGLRenderer({ 
             canvas: canvas,
@@ -70,7 +70,7 @@ class RoadBackground {
 
     createLighting() {
         // Cold, dim ambient light
-        const ambientLight = new THREE.AmbientLight(0xFFE3C6, 0.3);
+        const ambientLight = new THREE.AmbientLight(0xFFE3C6, 0.5);
         this.scene.add(ambientLight);
         
         // Cool directional light with blue tint
@@ -162,13 +162,12 @@ class RoadBackground {
         ground.position.y = -1;
         ground.receiveShadow = true;
         this.scene.add(ground);
-
         
         // Create distant mountains that stay far away
         this.createDistantMountains();
         
         // Create  winter pine trees
-        for (let i = 0; i < 100; i++) {
+        for (let i = 0; i < 75; i++) {
             let x = (Math.random() - 0.5) * 120;
             // Ensure trees are away from road center but can be closer
             if (Math.abs(x) < 8) {
@@ -182,7 +181,7 @@ class RoadBackground {
         }
 
         // Create floral trees
-        for (let i = 0; i < 50; i++) {
+        for (let i = 0; i < 75; i++) {
             let x = (Math.random() - 0.5) * 120;
             // Ensure trees are away from road center but can be closer
             if (Math.abs(x) < 8) {
@@ -278,62 +277,70 @@ createFloralTree(x, y, z) {
 
     // Trunk
     const trunkHeight = 3 + Math.random();
-    const trunkGeometry = new THREE.CylinderGeometry(0.35, 0.45, trunkHeight, 6, 1);
-    const trunkMaterial = new THREE.MeshLambertMaterial({ color: 0x5c3a2e }); // richer brown
+    const trunkGeometry = new THREE.CylinderGeometry(0.35, 0.45, trunkHeight, 8, 1);
+    const trunkMaterial = new THREE.MeshStandardMaterial({ color: 0x5c3a2e });
     const trunk = new THREE.Mesh(trunkGeometry, trunkMaterial);
     trunk.position.y = trunkHeight / 2;
+    trunk.castShadow = true;
+    trunk.receiveShadow = true;
     tree.add(trunk);
 
-    // Leaf canopy
+    // Canopy group
     const canopy = new THREE.Group();
-    const leafColors = [0x769e84, 0x5a7e55, 0x6c8f65]; // muted green tones
-    const flowerColors = [0x769e84, 0xd891a7, 0xe6a9bc]; // warm pink blossoms
+    const leafColors = [0x769e84, 0x5a7e55, 0x6c8f65];
+    const flowerColors = [0xd891a7, 0xe6a9bc, 0xf8d1dd];
 
-    // Create leafy blobs
-    const numLeafBlobs = 5 + Math.floor(Math.random() * 3);
+    const numLeafBlobs = 6 + Math.floor(Math.random() * 3);
     for (let i = 0; i < numLeafBlobs; i++) {
-        const size = 1.2 + Math.random() * 0.6;
-        const geometry = new THREE.SphereGeometry(size, 8, 8);
-        const color = leafColors[Math.floor(Math.random() * leafColors.length)];
-        const material = new THREE.MeshLambertMaterial({ color });
+        const size = 1.3 + Math.random() * 0.5;
+        const leafGeometry = new THREE.SphereGeometry(size, 14, 14);
+        const leafMaterial = new THREE.MeshStandardMaterial({
+            color: leafColors[Math.floor(Math.random() * leafColors.length)]
+        });
 
-        const blob = new THREE.Mesh(geometry, material);
-        blob.position.set(
-            (Math.random() - 0.5) * 2.0,
-            trunkHeight + Math.random() * 1.2,
-            (Math.random() - 0.5) * 2.0
+        const leaf = new THREE.Mesh(leafGeometry, leafMaterial);
+        leaf.position.set(
+            (Math.random() - 0.5) * 2.2,
+            trunkHeight + Math.random() * 1.5,
+            (Math.random() - 0.5) * 2.2
         );
-        blob.castShadow = true;
-        canopy.add(blob);
+        leaf.castShadow = true;
+        leaf.receiveShadow = true;
+        canopy.add(leaf);
 
-        // Add a few flower meshes to each leaf blob
         const flowerCount = 3 + Math.floor(Math.random() * 4);
         for (let j = 0; j < flowerCount; j++) {
-            const flowerGeo = new THREE.SphereGeometry(0.15 + Math.random() * 0.05, 6, 6);
-            const flowerMat = new THREE.MeshLambertMaterial({
-                color: flowerColors[Math.floor(Math.random() * flowerColors.length)]
+            const flowerSize = 0.2 + Math.random() * 0.07;
+            const flowerGeometry = new THREE.SphereGeometry(flowerSize, 16, 16);
+            const flowerMaterial = new THREE.MeshStandardMaterial({
+                color: flowerColors[Math.floor(Math.random() * flowerColors.length)],
+                emissive: 0xffaacb,
+                emissiveIntensity: 0.4,
+                roughness: 0.6,
+                metalness: 0.1
             });
-            const flower = new THREE.Mesh(flowerGeo, flowerMat);
 
+            const flower = new THREE.Mesh(flowerGeometry, flowerMaterial);
+
+            // Position relative to leaf blob center
             flower.position.set(
-                blob.position.x + (Math.random() - 0.5) * size,
-                blob.position.y + (Math.random() - 0.5) * size,
-                blob.position.z + (Math.random() - 0.5) * size
+                (Math.random() - 0.5) * size * 0.8,
+                (Math.random() - 0.3) * size * 0.8,
+                (Math.random() - 0.5) * size * 0.8
             );
 
             flower.castShadow = true;
-            canopy.add(flower);
+            flower.receiveShadow = true;
+
+            leaf.add(flower);  // add flower as child of leaf blob
         }
     }
 
     tree.add(canopy);
-
-    // Position the full tree
     tree.position.set(x, y, z);
     this.scene.add(tree);
     this.trees.push(tree);
 }
-
 
 
     createPineTree(x, y, z) {
