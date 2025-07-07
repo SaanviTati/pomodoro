@@ -104,7 +104,7 @@ const predictions = await model.detect(canvas);
 const phoneDetected = predictions.some(p => p.class === 'cell phone' && p.score > 0.6);
 
 showAlert(phoneDetected);
-}, 1000);
+}, 600);
 }
 
 main();

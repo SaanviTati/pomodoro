@@ -394,7 +394,7 @@ createFloralTree(x, y, z) {
             opacity: 0.85
         });
         
-        for (let i = 0; i < 20000; i++) {
+        for (let i = 0; i < 10000; i++) {
             const snowflake = new THREE.Mesh(snowflakeGeometry, snowflakeMaterial);
             
             snowflake.position.set(

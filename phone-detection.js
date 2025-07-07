@@ -69,9 +69,9 @@ async function detectPhone() {
     
     isDetecting = false;
 
-    // Continue detection loop every 200 milliseconds
+    // Continue detection loop every 500 milliseconds
     setTimeout(detectPhone, 50);
 }
 
 // Initialize when page loads
-document.addEventListener('DOMContentLoaded', initPhoneDetection);
+document.addEventListener('DOMContentLoaded', initPhoneDetection)
