@@ -1,3 +1,6 @@
+window.isRunning = false;
+window.isWorkSession = true;
+window.stopTimer = stopTimer;
 // Timer constants
 const WORK_TIME = 25 * 60; // 25 minutes in seconds
 const BREAK_TIME = 5 * 60; // 5 minutes in seconds
@@ -79,6 +82,7 @@ function updateButton() {
 
 // Start the timer
 function startTimer() {
+    window.isRunning = true; // Add this line
     isRunning = true;
     updateButton();
     
@@ -96,6 +100,7 @@ function startTimer() {
 
 // Stop the timer
 function stopTimer() {
+    window.isRunning = false; // Add this line
     isRunning = false;
     updateButton();
     
@@ -111,6 +116,7 @@ function handleTimerComplete() {
     
     // Switch session type
     isWorkSession = !isWorkSession;
+    window.isWorkSession = isWorkSession; // Add this line after isWorkSession = !isWorkSession;
     timeLeft = isWorkSession ? WORK_TIME : BREAK_TIME;
     
     // Update displays

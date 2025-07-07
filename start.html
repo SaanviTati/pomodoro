@@ -1,0 +1,113 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Phone Usage Detection</title>
+<style>
+body {
+margin: 0; font-family: Arial, sans-serif;
+background: #121212; color: #eee;
+}
+#webcam {
+position: fixed;
+bottom: 10px;
+right: 10px;
+border: 2px solid #555;
+border-radius: 8px;
+width: 160px;
+height: 120px;
+object-fit: cover;
+background: #222;
+z-index: 100;
+}
+#phoneAlert {
+position: fixed;
+top: 10px;
+right: 10px;
+background-color: #d32f2f;
+color: white;
+font-weight: bold;
+padding: 12px 20px;
+border-radius: 6px;
+box-shadow: 0 0 10px #d32f2faa;
+font-size: 18px;
+display: none;
+z-index: 9999;
+}
+#loadingMsg {
+position: fixed;
+top: 50%;
+left: 50%;
+transform: translate(-50%, -50%);
+font-size: 20px;
+color: #ccc;
+}
+</style>
+</head>
+<body>
+<div id="loadingMsg">Loading model and webcam...</div>
+<video id="webcam" autoplay playsinline muted></video>
+<div id="phoneAlert">📵 Phone Usage Detected!</div>
+
+<!-- TensorFlow.js and COCO-SSD model scripts -->
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.8.0/dist/tf.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd"></script>
+
+<script>
+const video = document.getElementById('webcam');
+const alertDiv = document.getElementById('phoneAlert');
+const loadingMsg = document.getElementById('loadingMsg');
+
+// Access webcam
+async function setupWebcam() {
+try {
+const stream = await navigator.mediaDevices.getUserMedia({ video: { facingMode: 'user' }, audio: false });
+video.srcObject = stream;
+await new Promise(resolve => video.onloadedmetadata = resolve);
+} catch (err) {
+alert('Error accessing webcam: ' + err.message);
+throw err;
+}
+}
+
+// Capture current frame into canvas for detection
+function captureFrame(videoElement) {
+const canvas = document.createElement('canvas');
+canvas.width = videoElement.videoWidth;
+canvas.height = videoElement.videoHeight;
+const ctx = canvas.getContext('2d');
+ctx.drawImage(videoElement, 0, 0, canvas.width, canvas.height);
+return canvas;
+}
+
+// Show or hide alert
+function showAlert(show) {
+alertDiv.style.display = show ? 'block' : 'none';
+}
+
+async function main() {
+loadingMsg.innerText = 'Accessing webcam...';
+await setupWebcam();
+
+loadingMsg.innerText = 'Loading AI model...';
+const model = await cocoSsd.load();
+
+loadingMsg.style.display = 'none';
+showAlert(false);
+
+setInterval(async () => {
+const canvas = captureFrame(video);
+const predictions = await model.detect(canvas);
+
+// Check if a phone detected with confidence > 0.6
+const phoneDetected = predictions.some(p => p.class === 'cell phone' && p.score > 0.6);
+
+showAlert(phoneDetected);
+}, 1000);
+}
+
+main();
+</script>
+</body>
+</html>

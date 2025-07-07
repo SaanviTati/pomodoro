@@ -5,6 +5,50 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Pomodoro Timer</title>
   <link rel="stylesheet" href="styles.css" />
+  <style>
+#webcam {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  width: 200px;
+  height: 150px;
+  border: 3px solid #fff;
+  border-radius: 12px;
+  object-fit: cover;
+  z-index: 100;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+#phoneAlert {
+  position: fixed;
+  top: 20px;
+  right: 20px;
+  background: linear-gradient(135deg, #ff4444, #cc0000);
+  color: white;
+  font-weight: bold;
+  padding: 16px 24px;
+  border-radius: 12px;
+  display: none;
+  z-index: 999;
+  box-shadow: 0 4px 12px rgba(255, 68, 68, 0.4);
+  animation: alertPulse 2s infinite;
+  font-size: 1.1em;
+}
+@keyframes alertPulse {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.05); }
+}
+#detectionStatus {
+  position: fixed;
+  bottom: 20px;
+  left: 20px;
+  background: rgba(0, 0, 0, 0.8);
+  color: white;
+  padding: 12px 18px;
+  border-radius: 8px;
+  font-size: 0.9em;
+  z-index: 100;
+}
+</style>
 </head>
 <body>
   <!-- Background -->
@@ -55,11 +99,15 @@
   <script src="script.js"></script>
 
   <!-- Webcam Feed -->
-  <iframe src="webcam.html" width="200px" height="200px"></iframe>
-
+  <video id="webcam" autoplay muted playsinline></video>
+  <div id="phoneAlert">📱 Phone Usage Detected!</div>
+  <div id="detectionStatus">Initializing camera...</div>
   <!-- Spotify Embed -->
   <div class="spotify-corner">
     <iframe style="border-radius:12px" src="https://open.spotify.com/embed/track/6UAMYWxRqZGp95EtIVuR0K?utm_source=generator" width="300" height="152" frameborder="0" allowfullscreen="" allow="autoplay; clipboard-write; encrypted-media; fullscreen; picture-in-picture" loading="lazy"></iframe>
   </div>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow/tfjs@4.2.0/dist/tf.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@tensorflow-models/coco-ssd@2.2.2/dist/coco-ssd.min.js"></script>
+  <script src="phone-detection.js"></script>
 </body>
 </html>
