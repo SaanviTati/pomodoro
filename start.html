@@ -100,8 +100,8 @@ setInterval(async () => {
 const canvas = captureFrame(video);
 const predictions = await model.detect(canvas);
 
-// Check if a phone detected with confidence > 0.6
-const phoneDetected = predictions.some(p => p.class === 'cell phone' && p.score > 0.6);
+// Check if a phone detected with confidence > 0.4
+const phoneDetected = predictions.some(p => p.class === 'cell phone' && p.score > 0.4);
 
 showAlert(phoneDetected);
 }, 600);

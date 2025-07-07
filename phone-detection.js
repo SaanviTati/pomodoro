@@ -35,7 +35,7 @@ async function initPhoneDetection() {
     }
 }
 
-// Detect phone in video feed using AI
+// Detect phone in the video using AI
 async function detectPhone() {
     if (!model || isDetecting) return;
     
@@ -44,15 +44,15 @@ async function detectPhone() {
     const alertDiv = document.getElementById('phoneAlert');
     
     try {
-        // Run AI detection on video frame
+        // Run AI detection
         const predictions = await model.detect(video);
         
-        // Check for phone/cell phone in AI predictions
+        // Check for phone in AI predictions
         const phoneFound = predictions.some(prediction => 
             prediction.class === 'cell phone' && prediction.score > 0.5
         );
         
-        // Show/hide alert based on detection
+        // Show and Hide alert based on detection
         if (phoneFound && !phoneDetected) {
             phoneDetected = true;
             alertDiv.style.display = 'block';
@@ -69,7 +69,7 @@ async function detectPhone() {
     
     isDetecting = false;
 
-    // Continue detection loop every 500 milliseconds
+    // Continue detection loop every 50 milliseconds
     setTimeout(detectPhone, 50);
 }
 

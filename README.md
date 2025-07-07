@@ -1,1 +1,1 @@
-Pomodoro garden website
+Pomodoro AI Detection website

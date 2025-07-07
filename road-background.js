@@ -37,19 +37,17 @@ class RoadBackground {
         this.camera.position.set(0, 2, 5);
         this.camera.lookAt(0, 0, 0);
 
-        // Create renderer
         this.renderer = new THREE.WebGLRenderer({ 
             canvas: canvas,
             alpha: true,
             antialias: true
         });
         this.renderer.setSize(window.innerWidth, window.innerHeight);
-        // Teal/cyan winter sky like slowroads
         this.renderer.setClearColor(0xFAD4C0, 1); 
         this.renderer.shadowMap.enabled = true;
         this.renderer.shadowMap.type = THREE.PCFSoftShadowMap;
         
-        // Dense atmospheric fog with teal tint
+        // Create fog
         this.scene.fog = new THREE.Fog(0xFFE3C6, 10, 120);
         
         // Create lighting
@@ -69,7 +67,7 @@ class RoadBackground {
     }
 
     createLighting() {
-        // Cold, dim ambient light
+        // Ambient light
         const ambientLight = new THREE.AmbientLight(0xFFE3C6, 0.5);
         this.scene.add(ambientLight);
         
@@ -115,7 +113,7 @@ class RoadBackground {
     }
 
     createRoadLines() {
-        // Dim yellow center line
+        // Yellow center line
         const lineGeometry = new THREE.BoxGeometry(0.2, 0.01, this.segmentLength * this.numSegments);
         const lineMaterial = new THREE.MeshBasicMaterial({ color: 0xBBA76A });
         
@@ -124,7 +122,7 @@ class RoadBackground {
         centerLine.position.z = -this.segmentLength * this.numSegments / 2;
         this.scene.add(centerLine);
         
-        // Dim white side lines
+        // White side lines
         const sideLineMaterial = new THREE.MeshBasicMaterial({ color: 0xA0A0A0 });
         
         const leftLine = new THREE.Mesh(lineGeometry, sideLineMaterial);
@@ -163,13 +161,13 @@ class RoadBackground {
         ground.receiveShadow = true;
         this.scene.add(ground);
         
-        // Create distant mountains that stay far away
+        // Create distant mountains
         this.createDistantMountains();
         
-        // Create  winter pine trees
+        // Create pine trees
         for (let i = 0; i < 75; i++) {
             let x = (Math.random() - 0.5) * 120;
-            // Ensure trees are away from road center but can be closer
+            // Ensure trees are away from road center
             if (Math.abs(x) < 8) {
                 x = x < 0 ? -8 - Math.random() * 20 : 8 + Math.random() * 20;
             }
@@ -180,10 +178,8 @@ class RoadBackground {
             );
         }
 
-        // Create floral trees
         for (let i = 0; i < 75; i++) {
             let x = (Math.random() - 0.5) * 120;
-            // Ensure trees are away from road center but can be closer
             if (Math.abs(x) < 8) {
                 x = x < 0 ? -8 - Math.random() * 20 : 8 + Math.random() * 20;
             }
@@ -197,7 +193,7 @@ class RoadBackground {
     }
 
     createDistantMountains() {
-        // Create mountains very far in the distance
+        // Create mountains far in the distance
         const numMountains = 100;
         const distance = -100;
         
@@ -221,7 +217,7 @@ createDistantMountain(x, y, z, height) {
         const topRadius = baseRadius * 0.4 + Math.random() * 3;
         const segments = 12 + Math.floor(Math.random() * 5);
 
-        // Replace ConeGeometry with CylinderGeometry
+        //CylinderGeometry
         const geometry = new THREE.CylinderGeometry(
             topRadius,
             baseRadius,
@@ -322,7 +318,7 @@ createFloralTree(x, y, z) {
 
             const flower = new THREE.Mesh(flowerGeometry, flowerMaterial);
 
-            // Position relative to leaf blob center
+            // Position relative to leaf center
             flower.position.set(
                 (Math.random() - 0.5) * size * 0.8,
                 (Math.random() - 0.3) * size * 0.8,
@@ -332,7 +328,7 @@ createFloralTree(x, y, z) {
             flower.castShadow = true;
             flower.receiveShadow = true;
 
-            leaf.add(flower);  // add flower as child of leaf blob
+            leaf.add(flower);  // add flower
         }
     }
 
@@ -386,7 +382,7 @@ createFloralTree(x, y, z) {
     }
 
     createSnow() {
-        // Create realistic snowflakes
+        // Create snowflakes
         const snowflakeGeometry = new THREE.SphereGeometry(0.05, 4, 3);
         const snowflakeMaterial = new THREE.MeshBasicMaterial({ 
             color: 0xF9EAE1,
@@ -460,9 +456,7 @@ createFloralTree(x, y, z) {
                 tree.position.x = newX;
             }
         });
-                
-        // Mountains stay stationary in distance
-        
+                        
         // Update road position
         this.road.position.z += this.speed;
         if (this.road.position.z > this.segmentLength) {

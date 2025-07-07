@@ -70,11 +70,11 @@ function updateSessionDisplay() {
 // Update button appearance
 function updateButton() {
     if (isRunning) {
-        btnIcon.textContent = '⏸️';
+        btnIcon.textContent = '⏸';
         btnText.textContent = 'Pause';
         startStopBtn.classList.add('running');
     } else {
-        btnIcon.textContent = '▶️';
+        btnIcon.textContent = '▶';
         btnText.textContent = 'Start';
         startStopBtn.classList.remove('running');
     }
@@ -82,7 +82,7 @@ function updateButton() {
 
 // Start the timer
 function startTimer() {
-    window.isRunning = true; // Add this line
+    window.isRunning = true;
     isRunning = true;
     updateButton();
     
@@ -100,7 +100,7 @@ function startTimer() {
 
 // Stop the timer
 function stopTimer() {
-    window.isRunning = false; // Add this line
+    window.isRunning = false;
     isRunning = false;
     updateButton();
     
@@ -116,7 +116,7 @@ function handleTimerComplete() {
     
     // Switch session type
     isWorkSession = !isWorkSession;
-    window.isWorkSession = isWorkSession; // Add this line after isWorkSession = !isWorkSession;
+    window.isWorkSession = isWorkSession;
     timeLeft = isWorkSession ? WORK_TIME : BREAK_TIME;
     
     // Update displays
@@ -130,7 +130,6 @@ function handleTimerComplete() {
         document.querySelector('.timer-card').classList.remove('session-transition');
     }, 600);
     
-    // Optional: Show notification or play sound
     if ('Notification' in window && Notification.permission === 'granted') {
         new Notification(`${isWorkSession ? 'Work' : 'Break'} session started!`);
     }
@@ -173,10 +172,9 @@ if ('Notification' in window && Notification.permission === 'default') {
     Notification.requestPermission();
 }
 
-// Page visibility handling (pause when tab is hidden)
+// Page visibility handling
 document.addEventListener('visibilitychange', () => {
     if (document.hidden && isRunning) {
-        // Optionally pause when tab becomes hidden
         // stopTimer();
     }
 });
