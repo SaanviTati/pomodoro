@@ -29,3 +29,4 @@ This project is a web-based Pomodoro timer that integrates a real-time phone det
 4. If a phone is identified in the frame, an on-screen alert appears to notify the user.
 
 The AI model is pretrained and runs entirely in the browser, with no images or data sent to external servers.
+[![Athena Award Badge](https://img.shields.io/endpoint?url=https%3A%2F%2Faward.athena.hackclub.com%2Fapi%2Fbadge)](https://award.athena.hackclub.com?utm_source=readme)
