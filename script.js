@@ -11,7 +11,7 @@ let isRunning = false;
 let isWorkSession = true;
 let timerInterval = null;
 
-// DOM elements
+// DOM elements                                                       
 const timeDisplay = document.getElementById('timeDisplay');
 const timeRemaining = document.getElementById('timeRemaining');
 const sessionType = document.getElementById('sessionType');
